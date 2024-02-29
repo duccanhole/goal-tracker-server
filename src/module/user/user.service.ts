@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserDto } from './dto/user.dto';
 import { AuthService } from '../auth/auth.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class UserService {
@@ -38,20 +39,23 @@ export class UserService {
     return await this.authService.generateToken(userData);
   }
 
-  async updatePassword(userData: UserDto) {
+  async updatePassword(data: ChangePasswordDto) {
     let check = true;
-    const user = await this.userModel.findOne({ username: userData.username });
+    const user = await this.userModel.findOne({ _id: data.userId });
     if (!user) check = false;
-    check = await bcrypt.compare(userData.password, userData.password);
+    check = await bcrypt.compare(user.password, data.oldPassword);
     if (!check) throw new Error('Wrong username or password');
-    const hashPassword = await bcrypt.hash(userData.password, 10);
-    return await this.userModel.updateOne(
-      {
-        username: userData.username,
-      },
-      {
-        password: hashPassword,
-      },
-    );
+    const hashPassword = await bcrypt.hash(data.newPassword, 10);
+    await this.userModel.findByIdAndUpdate(data.userId, {
+      password: hashPassword,
+    });
+    return true;
+  }
+
+  async deleteUser(userId: string) {
+    await this.userModel.deleteOne({
+      _id: userId,
+    });
+    return true;
   }
 }
