@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model } from 'mongoose';
@@ -19,10 +23,10 @@ export class UserService {
   }
 
   async createUser(userData: UserDto) {
-    const user = this.userModel.find({
+    const user = await this.userModel.find({
       username: userData.username,
     });
-    if (user) throw new Error('User is existed');
+    if (user.length > 0) throw new ConflictException('User is existed');
     const hashPassword = await bcrypt.hash(userData.password, 10);
     return await this.userModel.create({
       username: userData.username,
@@ -34,28 +38,31 @@ export class UserService {
     let check = true;
     const user = await this.userModel.findOne({ username: userData.username });
     if (!user) check = false;
-    check = await bcrypt.compare(userData.password, userData.password);
-    if (!check) throw new Error('Wrong username or password');
-    return await this.authService.generateToken(userData);
+    check = await bcrypt.compare(userData.password, user.password);
+    if (!check) throw new BadRequestException('Wrong username or password');
+    const token = await this.authService.generateToken(userData);
+    return {
+      token
+    }
   }
 
   async updatePassword(data: ChangePasswordDto) {
     let check = true;
     const user = await this.userModel.findOne({ _id: data.userId });
     if (!user) check = false;
-    check = await bcrypt.compare(user.password, data.oldPassword);
-    if (!check) throw new Error('Wrong username or password');
+    check = await bcrypt.compare(data.oldPassword, user.password);
+    if (!check) throw new BadRequestException('Wrong username or password');
     const hashPassword = await bcrypt.hash(data.newPassword, 10);
     await this.userModel.findByIdAndUpdate(data.userId, {
       password: hashPassword,
     });
-    return true;
+    return 'done';
   }
 
   async deleteUser(userId: string) {
     await this.userModel.deleteOne({
       _id: userId,
     });
-    return true;
+    return 'done';
   }
 }
