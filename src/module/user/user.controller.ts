@@ -6,17 +6,22 @@ import {
   Param,
   Post,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async getUser() {
+  @UseGuards(JwtAuthGuard)
+  async getUser(@Req() req: any) {
+    console.log(req.user);
     return await this.userService.getUser();
   }
 
@@ -31,6 +36,7 @@ export class UserController {
   }
 
   @Put('change-password')
+  @UseGuards(JwtAuthGuard)
   async changePassword(@Body() passwordForm: ChangePasswordDto) {
     return await this.userService.updatePassword(passwordForm);
   }

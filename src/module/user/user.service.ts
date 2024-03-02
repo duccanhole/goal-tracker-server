@@ -40,7 +40,7 @@ export class UserService {
     if (!user) check = false;
     check = await bcrypt.compare(userData.password, user.password);
     if (!check) throw new BadRequestException('Wrong username or password');
-    const token = await this.authService.generateToken(userData);
+    const token = await this.authService.generateToken(user.toObject());
     return {
       token
     }
