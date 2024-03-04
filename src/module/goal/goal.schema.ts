@@ -1,7 +1,9 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes } from 'mongoose';
 import { type } from 'os';
 import { User } from '../user/user.schema';
+
+export type GoalDocument = Goal & Document;
 
 @Schema()
 export class Goal {
@@ -23,3 +25,5 @@ export class Goal {
   @Prop({ required: true, type: Date })
   createdAt: Date;
 }
+
+export const GoalSchema = SchemaFactory.createForClass(Goal);

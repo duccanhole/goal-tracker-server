@@ -42,8 +42,9 @@ export class UserService {
     if (!check) throw new BadRequestException('Wrong username or password');
     const token = await this.authService.generateToken(user.toObject());
     return {
-      token
-    }
+      token,
+      userData: user
+    };
   }
 
   async updatePassword(data: ChangePasswordDto) {
