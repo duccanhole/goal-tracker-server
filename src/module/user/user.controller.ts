@@ -13,6 +13,8 @@ import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guards';
+import { ApiResponse } from '@nestjs/swagger';
+import { ILoginResponse, IUser } from './user.interface';
 
 @Controller('user')
 export class UserController {
@@ -26,11 +28,17 @@ export class UserController {
   }
 
   @Post('create')
+  @ApiResponse({
+    type: IUser,
+  })
   async registerUser(@Body() userData: UserDto) {
     return await this.userService.createUser(userData);
   }
 
   @Post('login')
+  @ApiResponse({
+    type: ILoginResponse,
+  })
   async login(@Body() userData: UserDto) {
     return await this.userService.login(userData);
   }
