@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ResponseFormatInterceptor } from './interceptor/response-format.interceptor';
 import { UserModule } from './module/user/user.module';
+import { GoalModule } from './module/goal/goal.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { UserModule } from './module/user/user.module';
       }),
       inject: [ConfigService],
     }),
-    UserModule
+    UserModule,
+    GoalModule
   ],
   controllers: [AppController],
   providers: [

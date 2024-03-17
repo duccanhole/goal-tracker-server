@@ -19,8 +19,8 @@ export class Goal {
   @Prop({ type: Boolean, default: false })
   hasNotification: boolean;
 
-  @Prop({ type: Date })
-  notifyAt: Date;
+  @Prop({ type: String })
+  notifyAt: String;
 
   @Prop({ required: true, type: Date })
   createdAt: Date;

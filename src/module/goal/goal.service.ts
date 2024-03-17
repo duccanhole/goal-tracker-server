@@ -23,11 +23,18 @@ export class GoalService {
     });
   }
 
+  async getGoalDetail(id: string) {
+    const doc = await this.goalModel.findById(id);
+    if (!doc) throw new NotFoundException('Data not found');
+    return doc
+  }
+
   async create(goalData: GoalDto, byUser: string) {
     const payload = {
-        ...goalData,
-        user: byUser
-    }
+      ...goalData,
+      user: byUser,
+      createdAt: new Date().toISOString(),
+    };
     return await this.goalModel.create(payload);
   }
 
@@ -42,6 +49,6 @@ export class GoalService {
     const doc = await this.goalModel.findById(id);
     if (!doc) throw new NotFoundException('Data not found');
     await this.goalModel.findByIdAndDelete(id);
-    return "done"
+    return 'done';
   }
 }

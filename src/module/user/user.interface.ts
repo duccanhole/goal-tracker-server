@@ -27,8 +27,16 @@ export class ILoginResult {
 
 export class ILoginResponse {
   @ApiProperty({ type: ILoginResult })
-  result: {
-    token: string;
-    userData: IUser;
-  };
+  result: ILoginResult
+}
+
+
+export class ICreateResponse {
+  @ApiProperty({ type: IUser })
+  result: IUser
+}
+
+export class IUpdateResponse {
+  @ApiProperty({ type: String, example: "done" })
+  result: String
 }

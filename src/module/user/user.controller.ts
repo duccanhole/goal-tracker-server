@@ -14,7 +14,7 @@ import { UserDto } from './dto/user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 import { ApiResponse } from '@nestjs/swagger';
-import { ILoginResponse, IUser } from './user.interface';
+import { ICreateResponse, ILoginResponse, IUpdateResponse } from './user.interface';
 
 @Controller('user')
 export class UserController {
@@ -29,7 +29,7 @@ export class UserController {
 
   @Post('create')
   @ApiResponse({
-    type: IUser,
+    type: ICreateResponse,
   })
   async registerUser(@Body() userData: UserDto) {
     return await this.userService.createUser(userData);
@@ -45,11 +45,15 @@ export class UserController {
 
   @Put('change-password')
   @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    type: IUpdateResponse,
+  })
   async changePassword(@Body() passwordForm: ChangePasswordDto) {
     return await this.userService.updatePassword(passwordForm);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async deleteUser(@Param('id') userId: string) {
     return await this.userService.deleteUser(userId);
   }
