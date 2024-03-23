@@ -36,13 +36,12 @@ export class GoalController {
     return await this.goalService.create(body, userId)
   }
 
-  @Put('/update')
+  @Put('/update/:id')
   @ApiResponse({
     type: ICreateGetUpdateResponse
   })
-  async updateGoal(@Body() body: GoalDto, @Req() request) {
-    const userId = request.user._id
-    return await this.goalService.update(body, userId)
+  async updateGoal(@Body() body: GoalDto,@Param(':id') id) {
+    return await this.goalService.update(id, body)
   }
 
   @Delete(':id')

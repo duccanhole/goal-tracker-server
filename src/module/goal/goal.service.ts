@@ -38,7 +38,7 @@ export class GoalService {
     return await this.goalModel.create(payload);
   }
 
-  async update(goalData: GoalDto, id: string) {
+  async update(id: String,goalData: GoalDto) {
     const doc = await this.goalModel.findById(id);
     if (!doc) throw new NotFoundException('Data not found');
     await this.goalModel.findByIdAndUpdate(id, goalData);
