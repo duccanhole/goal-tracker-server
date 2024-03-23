@@ -7,6 +7,9 @@ import { GoalDto } from './dto/goal.dto';
 @Injectable()
 export class GoalService {
   constructor(@InjectModel(Goal.name) private goalModel: Model<GoalDocument>) {}
+  async get() {
+    return await this.goalModel.find()
+  }
 
   async getGoalToday(userId: string) {
     const today = new Date();

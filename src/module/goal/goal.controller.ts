@@ -4,11 +4,17 @@ import { GoalService } from './goal.service';
 import { GoalDto } from './dto/goal.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { ICreateGetUpdateResponse, IGetTodayResponse } from './goal.interface';
+import { log } from 'console';
 
 @Controller('goal')
 @UseGuards(JwtAuthGuard)
 export class GoalController {
   constructor(private goalService: GoalService) {}
+  @Get()
+  async get() {
+    return await this.goalService.get()
+  }
+
   @Get('today')
   @ApiResponse({
     isArray: true,
@@ -36,11 +42,11 @@ export class GoalController {
     return await this.goalService.create(body, userId)
   }
 
-  @Put('/update/:id')
+  @Put(':id')
   @ApiResponse({
     type: ICreateGetUpdateResponse
   })
-  async updateGoal(@Body() body: GoalDto,@Param(':id') id) {
+  async updateGoal(@Param('id') id: string, @Body() body: GoalDto) {
     return await this.goalService.update(id, body)
   }
 
