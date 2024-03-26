@@ -8,7 +8,7 @@ import { GoalDto } from './dto/goal.dto';
 export class GoalService {
   constructor(@InjectModel(Goal.name) private goalModel: Model<GoalDocument>) {}
   async get() {
-    return await this.goalModel.find()
+    return await this.goalModel.find();
   }
 
   async getGoalToday(userId: string) {
@@ -26,10 +26,52 @@ export class GoalService {
     });
   }
 
+  async getByRange(range: number = -1, user: string) {
+    const qUndone: any = { isDone: false, user },
+      qDone: any = { isDone: true, user };
+    if (range > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const start = new Date(today),
+        end = new Date(today);
+      start.setDate(start.getDate() - range);
+      end.setDate(start.getDate() + 1);
+      qDone.createdAt = {
+        $gte: start,
+        $lt: end,
+      };
+      qUndone.createdAt = {
+        $gte: start,
+        $lt: end,
+      };
+    }
+    const undone = await this.goalModel.countDocuments(qUndone);
+    const done = await this.goalModel.countDocuments(qDone);
+    return { undone, done };
+  }
+
+  async getUserLevel(user: string) {
+    const totalDone = await this.goalModel.countDocuments({ user });
+    switch (true) {
+      case totalDone <= 10:
+        return 1;
+      case totalDone > 10 && totalDone <= 25:
+        return 2;
+      case totalDone > 25 && totalDone <= 100:
+        return 3;
+      case totalDone > 100 && totalDone <= 200:
+        return 4;
+      case totalDone > 200 && totalDone <= 500:
+        return 5;
+      default:
+        return 6;
+    }
+  }
+
   async getGoalDetail(id: string) {
     const doc = await this.goalModel.findById(id);
     if (!doc) throw new NotFoundException('Data not found');
-    return doc
+    return doc;
   }
 
   async create(goalData: GoalDto, byUser: string) {
@@ -41,7 +83,7 @@ export class GoalService {
     return await this.goalModel.create(payload);
   }
 
-  async update(id: String,goalData: GoalDto) {
+  async update(id: String, goalData: GoalDto) {
     const doc = await this.goalModel.findById(id);
     if (!doc) throw new NotFoundException('Data not found');
     await this.goalModel.findByIdAndUpdate(id, goalData);

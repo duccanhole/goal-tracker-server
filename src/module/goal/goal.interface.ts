@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GoalDto } from './dto/goal.dto';
+import { CountDto, GoalDto } from './dto/goal.dto';
 
 export class IGetTodayResponse {
   @ApiProperty({ type: GoalDto, isArray: true })
@@ -9,4 +9,14 @@ export class IGetTodayResponse {
 export class ICreateGetUpdateResponse {
   @ApiProperty({ type: GoalDto })
   results: GoalDto;
+}
+
+export class ICountResponse {
+  @ApiProperty({type: CountDto})
+  results: CountDto
+}
+
+export class IUserLevelResponse {
+  @ApiProperty({type: Number})
+  results: number
 }

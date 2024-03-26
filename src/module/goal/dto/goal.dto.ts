@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDate, IsMongoId, IsNumber, IsOptional, IsString, isNumber } from 'class-validator';
 
 export class GoalDto {
   @ApiProperty({type: String, required: false, example: "65f667738394f9c12e4bafdc"})
@@ -31,4 +31,15 @@ export class GoalDto {
   @IsOptional()
   @ApiProperty({type: Date, required: false, example: "2024-03-17T03:48:18.393Z"})
   createdAt: Date;
+}
+
+
+export class CountDto {
+  @IsNumber()
+  @ApiProperty({type: Number})
+  done: number
+
+  @IsNumber()
+  @ApiProperty({type: Number})
+  undone: number
 }
