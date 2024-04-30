@@ -15,13 +15,14 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 import { ApiResponse } from '@nestjs/swagger';
 import { ICreateResponse, ILoginResponse, IUpdateResponse } from './user.interface';
+import { GoogleUserDto } from './dto/google-user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getUser(@Req() req: any) {
     console.log(req.user);
     return await this.userService.getUser();
@@ -41,6 +42,14 @@ export class UserController {
   })
   async login(@Body() userData: UserDto) {
     return await this.userService.login(userData);
+  }
+
+  @Post('google-login')
+  @ApiResponse({
+    type: ILoginResponse
+  })
+  async googleLogin(@Body() googleUser: GoogleUserDto){
+    return await this.userService.googleLogin(googleUser)
   }
 
   @Put('change-password')

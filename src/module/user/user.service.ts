@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UserDto } from './dto/user.dto';
 import { AuthService } from '../auth/auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { GoogleUserDto } from './dto/google-user.dto';
 
 @Injectable()
 export class UserService {
@@ -31,6 +32,7 @@ export class UserService {
     return await this.userModel.create({
       username: userData.username,
       password: hashPassword,
+      email: userData.email
     });
   }
 
@@ -45,6 +47,30 @@ export class UserService {
       token,
       userData: user
     };
+  }
+
+  async googleLogin(googleUser: GoogleUserDto){
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!regex.test(googleUser.email)) throw new BadRequestException("Email invalid")
+    const user = await this.userModel.findOne({ email: googleUser.email })
+    let username = googleUser.displayName
+    if(!user) {
+      const checkExisted = await this.userModel.findOne({ username: googleUser.displayName })
+      const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000
+      username = checkExisted ? googleUser.displayName + randomNumber : googleUser.displayName
+      await this.createUser({
+        username,
+        password: googleUser.uid,
+        email: googleUser.email
+      })
+    }
+    else {
+      username = user.username
+    }
+    return await this.login({
+      username,
+      password: googleUser.uid
+    })
   }
 
   async updatePassword(data: ChangePasswordDto) {
