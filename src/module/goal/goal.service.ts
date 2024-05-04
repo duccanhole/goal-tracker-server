@@ -31,11 +31,10 @@ export class GoalService {
       qDone: any = { isDone: true, user };
     if (range > 0) {
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const start = new Date(today),
-        end = new Date(today);
-      start.setDate(start.getDate() - range);
-      end.setDate(start.getDate() + 1);
+      const start = new Date();
+      start.setDate(today.getDate() - range)
+      const end = new Date();
+      end.setDate(today.getDate())
       qDone.createdAt = {
         $gte: start,
         $lt: end,
